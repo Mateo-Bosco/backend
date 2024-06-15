@@ -1,4 +1,5 @@
-const fs = require(`fs`);
+// const fs = require(`fs`);
+import fs from "fs";
 
 class ProductManager{
     #products;
@@ -6,7 +7,7 @@ class ProductManager{
     static idProduct = 0;
 
     constructor(){
-        this.#path = `./data/products.json`;
+        this.#path = `./src/data/products.json`;
         this.#products = this.#readProductsInFile();
     }
 
@@ -63,7 +64,10 @@ class ProductManager{
         return `Producto agregado exitosamente`;
     }
 
-    getProducts(){
+    getProducts(limit = 0){
+        limit = Number(limit);
+        if(limit > 0)
+            return this.#products.slice(0,limit);
         return this.#products;
     }
 
@@ -106,4 +110,5 @@ class ProductManager{
 
 
 
-module.exports = ProductManager
+// module.exports = ProductManager
+export default ProductManager;
