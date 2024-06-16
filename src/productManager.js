@@ -81,11 +81,15 @@ class ProductManager{
     }
 
     getProductById(id){
+        let status = false;
+        let resp = `¡El producto con ${id} no exitse!`;
+        
         const product = this.#products.find(p => p.id == id);
-        if(product)
-            return product;
-        else
-            return `Not Found del producto con id ${id}`;
+        if(product){
+            status = true;
+            resp = product;
+        }
+        return { status, resp }
     }
 
     updateProduct(id, objectUpdate){
@@ -102,7 +106,7 @@ class ProductManager{
                 obj[key]= rest[key];
                 return obj;
             }, {});
-            this.#products[index] = {...this.#products[index], ...rest};
+            this.#products[index] = {...this.#products[index], ...updateProperties};
             this.#saveFile();
             result = {
                 msg:`¡Producto actualizado!`,
