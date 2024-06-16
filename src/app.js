@@ -1,21 +1,19 @@
 import express from "express";
-import ProductManager from "./productManager.js";
-
+import products from "./routers/products.js";
+import carts from "./routers/carts.js";
 
 const app = express();
 const PORT = 8080;
 
-app.get(`/products`, (req,res)=>{
-    const {limit} = req.query;
-    const p = new ProductManager();
-    return res.json({productos:p.getProducts(limit)});
+app.use(express.json());
+app.use(express.urlencoded({ extended: true}));
+
+app.get(`/`, (req,res)=> {
+    return res.send(`En trabajo`)
 });
 
-app.get(`/products/:pid`,(req, res) => {
-    const { pid } = req.params;
-    const p = new ProductManager();
-    return res.json({product: p.getProductById(Number(pid))});
-});
+app.use(`/api/products`, products);
+app.use(`/api/carts`, carts);
 
 app.listen(PORT, ()=>{
     console.log(`Corriendo aplicación en el puerto ${PORT}`);
