@@ -4,11 +4,17 @@ import fs from "fs";
 class ProductManager{
     #products;
     #path;
-    static idProduct = 0;
+
+    static #instance;
 
     constructor(){
+        if(ProductManager.#instance)
+            return ProductManager.#instance;
+        
         this.#path = `./src/data/products.json`;
         this.#products = this.#readProductsInFile();
+
+        ProductManager.#instance = this;
     }
 
     #assignIdProduct(){
@@ -37,7 +43,7 @@ class ProductManager{
         }
     }
 
-    addProduct(title, description, price, thumbnails=[], code, stock, category, status = true){
+    addProduct({title, description, price, thumbnails=[], code, stock, category, status = true}){
 
         let result = `Ocurrio un error`;
 
@@ -48,7 +54,6 @@ class ProductManager{
             if(codeRepeat)
                 result = `El código ${code} ya se encuentra registrado en otro producto`;
             else{
-                ProductManager.idProduct = ProductManager.idProduct + 1;
                 const id = this.#assignIdProduct();
         
                 const newProduct = {
@@ -64,10 +69,10 @@ class ProductManager{
                 };
                 this.#products.push(newProduct);
                 this.#saveFile();
-                msg = {
-                    msg:`Producto agregado exitosamente`,
+                result = {
+                    msg:'Producto agregado exitosamente',
                     producto: newProduct
-                }
+                };
             }
         }
         return result;
