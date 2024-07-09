@@ -1,16 +1,15 @@
 import { Router } from "express";
-import ProductManager from "../productManager.js";
+import { productModel } from "../models/products.js";
 
 const router = Router();
+
+router.get(`/`,async(req,res)=>{
+    const products = productModel.find();
+    return res.render(`home`,{products, styles:`styles.css`});
+})
 
 router.get('/realtimeproducts', (req,res)=>{
     return res.render('realTimeProducts');
 });
-
-// router.get('/', (req,res)=>{
-//     const p = new ProductManager();
-//     const products = p.getProducts();
-//     return res.render('home', {products, styles: 'styles.css'});
-// });
 
 export default router;

@@ -6,12 +6,11 @@ import products from "./routers/products.js";
 import carts from "./routers/carts.js";
 import views from "./routers/views.js";
 import __dirname from "./utlis.js";
-import ProductManager from "./productManager.js";
+import { dbConnection } from "./database/config.js";
+import { productModel } from "./models/products.js";
 
 const app = express();
 const PORT = 8080;
-
-const p = new ProductManager()
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true}));
@@ -25,16 +24,20 @@ app.use('/', views);
 app.use(`/api/products`, products);
 app.use(`/api/carts`, carts);
 
-const expressServer = app.listen(PORT, ()=>{console.log(`Corriendo aplicación en el puerto ${PORT}`);});
-const socketServer = new Server(expressServer);
+await dbConnection();
 
-socketServer.on('connection',socket=>{
-    const products = p.getProducts();
+const expressServer = app.listen(PORT, ()=>{console.log(`Corriendo aplicación en el puerto ${PORT}`);});
+const io = new Server(expressServer);
+
+io.on('connection',async(socket)=>{
+    const products = await productModel.find();
     socket.emit('products', products);
 
     socket.on('addProduct', product=>{
-        const result = p.addProduct({...product});
-        if(result.product)
-        socket.emit('products', products);
+        const newProduct = productModel.create({...product});
+        if(newProduct){
+            products.push(newProduct);
+            socket.emit('products', products);
+        }
     });
 });
